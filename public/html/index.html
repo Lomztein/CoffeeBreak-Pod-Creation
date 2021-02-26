@@ -16,7 +16,6 @@
         </div>
     </body>
     <script>
-        var knownPods = []
         
         var ip = "localhost";
         var port = 3001;
@@ -47,24 +46,26 @@
             let response = await fetch(getBackendPath() + "/pods", {
                 method: "GET"
             });
-
-            return JSON.parse(response.body);
+            let data = await response.json()
+            console.log(data)
+            return data;
         }
 
-        function update () {
+        async function update () {
             fetchPods().then((pods) => {
-                knownPods = pods
-                rebuildPodTable();
+                console.log(pods)
+                rebuildPodTable(pods);
             })
         }
 
-        function rebuildPodTable () {
+        function rebuildPodTable (knownPods) {
             let table = document.getElementById("table");
             let html = "";
 
-            for (pod in knownPods) {
+            knownPods.forEach((pod) => {
+                console.log(pod)
                 html += buildPodRow(pod);
-            }
+            }) 
 
             table.innerHTML = html;
         }
