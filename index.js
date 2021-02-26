@@ -1,5 +1,15 @@
 const express = require("express")
 const app = express()
+const k8s = require('@kubernetes/client-node');
+
+const kc = new k8s.KubeConfig();
+kc.loadFromDefault();
+
+const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
+
+k8sApi.listNamespacedPod('default').then((res) => {
+    console.log(res.body.items);
+});
 
 app.use(express.static("public"))
 app.use(express.json())
@@ -35,6 +45,6 @@ app.get("/pods", (req,res) => {
     res.send(mockPodArray)
 })
 
-app.listen("3001", "0.0.0.0", () => {
+app.listen("3005", "0.0.0.0", () => {
     console.log("Server is up!")
 })
