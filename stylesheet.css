@@ -1,0 +1,59 @@
+body
+{
+    background-color: darkslategray;
+}
+
+#create
+{
+    background-color:#4CAF50;
+    width: 33%;
+    height: 64;
+    position:absolute;
+    font-size: x-large;
+    color: white;
+    font-weight: bold;
+    border: none;
+    top:10%;
+    left:33%;
+}
+
+#table
+{
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+  position:absolute;
+  top:30%;
+  width:66%;
+  left:17.5%;
+}
+
+tr
+{
+    border: solid black;
+}
+
+td
+{
+    width: 33%;
+    text-align: center;
+}
+
+#td-main
+{
+    text-align: center;
+    background-color: green;
+}
+
+#delete
+{
+    background-color:#990000;
+    color: white;
+    border: none;
+    height: 32px;
+    width: 96px;
+}
