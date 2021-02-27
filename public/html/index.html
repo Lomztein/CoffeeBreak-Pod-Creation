@@ -3,15 +3,12 @@
         <title>Pod Controller Experiment</title>
         <link rel="stylesheet" href="../css/stylesheet.css">
     </head>
-    <body>
+    <body onload="update()">
         <div class = creation>
             <button id="create" onclick="createPod();update()">CREATE POD!</button>
         </div>
         <div>
             <table id="table">
-                <tr>
-                    <td id="td-main">Pod ID</td><td>Pod IP</td><td>Pod Domain Name</td><td><button id="delete" onclick="deletePod();update()">Delete</button></td>
-                </tr>
             </table>
         </div>
     </body>
@@ -30,10 +27,10 @@
             })
         }
 
-        async function deletePod (id, name) {
+        async function deletePod (id) {
             await fetch(getBackendPath() + "/deletepod", {
                 method: "DELETE",
-                body: JSON.stringify({id, name}),
+                body: JSON.stringify({id: id}),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -71,7 +68,7 @@
         }
 
         function buildPodRow (pod) {
-            return "<tr><td id=\"td-main\">" + pod.id + "</td><td>" + pod.ip + "</td><td>" + pod.domainName + "</td><td><button id=\"delete\" onclick=\"deletePod()\">Delete</button></td></tr>"
+            return "<tr><td id=\"td-main\">" + pod.id + "</td><td>" + pod.ip + "</td><td>" + pod.domainName + "</td><td><button id=\"delete\" onclick=\"deletePod(" + pod.id + ");update()\">Delete</button></td></tr>"
         }
     </script>
 </html>
