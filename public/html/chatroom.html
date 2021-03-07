@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <title>Pod-based Chatroom LOL</title>
+        <link rel="stylesheet" href="../css/stylesheet.css">
+    </head>
+    <body>
+        <div id="chatbox">
+            <h1 id="chatheader">This is a chatroom!</h1>
+            <div id="chatarea">
+            </div>
+            <div>
+                <input id="messageinput" type="text">
+                <button id="sendmessage" onclick="sendMessage()">SEND</button>
+            </div>
+        </div>
+    </body>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        var socket = io();
+        var input = document.getElementById("messageinput");
+        var messageArea = document.getElementById("chatarea");
+
+        var messages = []
+        var maxMessages = 14;
+
+        socket.on("chatMessage", function(msg)
+        {
+            messages.push(msg);
+            if (messages.length >= maxMessages) {
+                messages.shift()
+            }
+
+            messageArea.innerHTML = generateAllMessagesHTML();
+        })
+        
+        function sendMessage ()
+        {
+            if (input.value)
+            {
+                socket.emit("chatMessage", input.value);
+                input.value = '';
+            }
+        }
+
+        function generateMessageHTML(message)
+        {
+            return "<p>" + message + "</p>"
+        }
+
+        function generateAllMessagesHTML() {
+            result = '';
+
+            messages.forEach((msg) => {
+                result += generateMessageHTML(msg);
+            })
+
+            return result
+        }
+
+    </script>
+</html>
