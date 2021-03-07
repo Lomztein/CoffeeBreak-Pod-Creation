@@ -1,74 +1,103 @@
 <html>
-    <head>
-        <title>Pod Controller Experiment</title>
-        <link rel="stylesheet" href="../css/stylesheet.css">
-    </head>
-    <body onload="update()">
-        <div class = creation>
-            <button id="create" onclick="createPod();update()">CREATE POD!</button>
-        </div>
-        <div>
-            <table id="table">
-            </table>
-        </div>
-    </body>
-    <script>
+
+<head>
+    <title>Pod Controller Experiment</title>
+    <link rel="stylesheet" href="../css/stylesheet.css">
+</head>
+
+<body onload="updatePings()">
+    <div class=creation>
+        <button id="create" onclick="createPod()">CREATE POD!</button>
+    </div>
+    <div>
+        <table id="table">
+        </table>
+    </div>
+</body>
+<script>
+
+    var ip = "localhost";
+    var port = 3001;
+
+    function getBackendPath() {
+        return "http://" + ip + ":" + port;
+    }
+
+    async function createPod() {
+        let response = await fetch(getBackendPath() + "/createpod", {
+            method: "POST"
+        })
+        let data = await response.json()
         
-        var ip = "localhost";
-        var port = 3001;
+        await updatePings()
+        
 
-        function getBackendPath () {
-            return "http://" + ip + ":" + port;
-        }
+    }
 
-        async function createPod () {
-            await fetch(getBackendPath() + "/createpod", {
-                method: "POST"
-            })
-        }
+    async function deletePod(name) {
+        await fetch(getBackendPath() + "/deletepod", {
+            method: "DELETE",
+            body: JSON.stringify({ name: name }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+    
+        await updatePings()
+    }
 
-        async function deletePod (id) {
-            await fetch(getBackendPath() + "/deletepod", {
-                method: "DELETE",
-                body: JSON.stringify({id: id}),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-        }
+    async function fetchPods() {
+        let result = {};
 
-        async function fetchPods () {
-            let result = {};
+        let response = await fetch(getBackendPath() + "/pods", {
+            method: "GET"
+        });
+        let data = await response.json()
+        return data;
+    }
 
-            let response = await fetch(getBackendPath() + "/pods", {
-                method: "GET"
-            });
-            let data = await response.json()
-            console.log(data)
-            return data;
-        }
 
-        async function update () {
-            fetchPods().then((pods) => {
-                console.log(pods)
-                rebuildPodTable(pods);
-            })
-        }
 
-        function rebuildPodTable (knownPods) {
-            let table = document.getElementById("table");
-            let html = "";
+    async function updatePings() {
+        let response = await fetch(getBackendPath() + "/updatepings",)
+        let data = await response.json()
+        console.log("awdawd")
+        rebuildPodTable(data)
 
-            knownPods.forEach((pod) => {
-                console.log(pod)
-                html += buildPodRow(pod);
-            }) 
+    }
 
-            table.innerHTML = html;
-        }
 
-        function buildPodRow (pod) {
-            return "<tr><td id=\"td-main\">" + pod.id + "</td><td>" + pod.ip + "</td><td>" + pod.domainName + "</td><td><button id=\"delete\" onclick=\"deletePod(" + pod.id + ");update()\">Delete</button></td></tr>"
-        }
-    </script>
+
+    async function pingPod(ip, domainName) {
+        let response = await fetch(getBackendPath() + "/ping", {
+            method: "POST",
+            body: JSON.stringify({ name: domainName, ip: ip }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        let data = await response.json()
+        let element = document.getElementById(domainName)
+        element.innerHTML = data.count
+    }
+
+    async function rebuildPodTable(knownPods) {
+        let table = document.getElementById("table");
+        let html = "<tr><td id=\"td-main\">UID</td><td>Pod IP</td><td>Pod Name</td><td>Delete</td><td>Ping</td><td>Ping Count</td></tr>"
+
+        knownPods.forEach((pod) => {
+            console.log(pod)
+            
+            html += buildPodRow(pod);
+        })
+
+        table.innerHTML = html;
+    }
+
+    function buildPodRow(pod) {
+        if(pod.ip == undefined) pod.ip = "Startup up..."
+        return "<tr><td id=\"td-main\">" + pod.id + "</td><td>" + pod.ip + "</td><td>" + pod.domainName + "</td><td><button id=\"delete\" onclick=\"deletePod(" + "\'" + pod.domainName + "\'" + ")\">Delete</button></td><td><button id=\"ping\" onclick=\"pingPod(" + "\'" + pod.ip + "\'" + ", " + "\'" + pod.domainName + "\'" + ")\">Ping</button></td><td id=\"" + pod.domainName + "\">" + pod.count + "</td></tr>"
+    }
+</script>
+
 </html>
