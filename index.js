@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express()
+const {createServiceAndDeployment, patchIngressAdd, removeDeadServices, removeServiceAndDeployment} = require("./kubernetes-handler")
 
 var mockPods = []
 var idCounter = 0
@@ -12,7 +13,7 @@ var randNameEnd = [
     "juice","rings","vest","horse","representative","flowers","quicksand","sleep","pest","fact","increase","rule","ice","crayon","stream","dolls","activity","laborer","plot","letters","wish","jam","hour","mist","chin","trail","temper","tank","straw","sea","grip","reason","suggestion","leg","plant","ink","way","grass","bushes","walk"
 ]
 
-function generateMockPod () {
+async function generateMockPod () {
     let pod = 
     {
         id: idCounter,
@@ -20,6 +21,11 @@ function generateMockPod () {
         domainName: generateRandomName()
     }
     idCounter++;
+    //let response = await createServiceAndDeployment(pod.domainName)
+    //let response = await patchIngress()
+
+    //await removeServiceAndDeployment("few-savory-jam")
+    await removeDeadServices()
     return pod;
 }
 
@@ -57,6 +63,7 @@ app.post("/createpod", (req, res) => {
     console.log("creates pod")
     mockPods.push(generateMockPod());
     res.send("pod created")
+    
 })
 
 app.get("/test", (req,res) => {
