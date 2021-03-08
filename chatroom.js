@@ -11,7 +11,6 @@ http.listen("3002", () => {
 })
 
 io.on('connection', (socket) => {
-
     console.log("A user has connected!");
     io.emit('chatMessage', "<i>Someone new has connected!</i>")
 

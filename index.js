@@ -1,6 +1,6 @@
 const express = require("express")
 const app = express()
-const {createServiceAndDeployment, patchIngressAdd, removeDeadServices, removeServiceAndDeployment} = require("./kubernetes-handler")
+const {createServiceAndDeployment, patchIngressAdd, removeDeadServices, removeServiceAndDeployment, getIngressServices} = require("./kubernetes-handler")
 
 var mockPods = []
 var idCounter = 0
@@ -21,11 +21,9 @@ async function generateMockPod () {
         domainName: generateRandomName()
     }
     idCounter++;
-    //let response = await createServiceAndDeployment(pod.domainName)
-    //let response = await patchIngress()
+    await createServiceAndDeployment(pod.domainName)
 
-    //await removeServiceAndDeployment("few-savory-jam")
-    await removeDeadServices()
+    
     return pod;
 }
 
@@ -38,6 +36,8 @@ function generateRandomName () {
 
 function deleteMockPod (id) {
     mockPods = mockPods.filter(pod => !(pod.id == id));
+    //await removeServiceAndDeployment("few-savory-jam")
+    //await removeDeadServices()
 }
 
 app.use(express.static("public"))
@@ -55,7 +55,7 @@ app.delete("/deletepod", (req,res) => {
     console.log("deletes pod")
     console.log(req.body)
     let pod = req.body
-    deleteMockPod(pod.id)
+    removeServiceAndDeployment(pod.domainName)
     res.send("pod deleted!")
 })
 
@@ -70,9 +70,16 @@ app.get("/test", (req,res) => {
     res.send("hej")
 })
 
-app.get("/pods", (req,res) => {
-    console.log(mockPods);
-    res.send(mockPods)
+app.get("/pods", async (req,res) => {
+    let response = await getIngressServices();
+    let podObjects = response.body.spec.rules[0].http.paths.map(service => {
+        let podObject = {domainName: undefined, path: undefined}
+        podObject.domainName = service.backend.service.name
+        podObject.path = "users.data/" + service.path.split("/")[1]
+        return podObject
+    })
+    res.send(podObjects)
+
 })
 
 app.listen("3001", "0.0.0.0", () => {

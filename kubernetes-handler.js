@@ -72,11 +72,12 @@ async function createServiceAndDeployment(username) {
     await patchIngressAdd(username)
 }
 
-async function removeServiceAndDeployment(username){
+async function removeServiceAndDeployment(username) {
     let service = await k8sApi.deleteNamespacedService(username, "default")
-    console.log(service)
+
     let deployment = await appsV1Api.deleteNamespacedDeployment(username, "default")
-    console.log(deployment)
+    // console.log(deployment)
+    await removeDeadServices()
 }
 async function patchIngressAdd(username) {
     const patch = [
@@ -97,8 +98,8 @@ async function patchIngressAdd(username) {
             }
         }
     ]
-    const options = { "headers": { "Content-type": k8s.PatchUtils.PATCH_FORMAT_JSON_PATCH}};
-    let response = await ingressK8.patchNamespacedIngress("chat-ingress", 'default', patch, undefined, undefined, undefined, undefined, options )
+    const options = { "headers": { "Content-type": k8s.PatchUtils.PATCH_FORMAT_JSON_PATCH } };
+    let response = await ingressK8.patchNamespacedIngress("chat-ingress", 'default', patch, undefined, undefined, undefined, undefined, options)
     return response
 }
 
@@ -112,20 +113,22 @@ async function patchIngressRemove(index) {
     const options = { "headers": { "Content-type": k8s.PatchUtils.PATCH_FORMAT_JSON_PATCH}};
     let response = await ingressK8.patchNamespacedIngress("chat-ingress", 'default', patch, undefined, undefined, undefined, undefined, options )
     return response
-}   
+}
 
-async function getIngressServices(){
+async function getIngressServices() {
     let ingressPaths = await ingressK8.readNamespacedIngressStatus("chat-ingress", "default")
     return ingressPaths
 }
-async function removeDeadServices(){
-    const ingressServices = await getServices().body.spec.rules[0].http.paths.map(service => service.backend.service.name)
+async function removeDeadServices() {
+    const ingressPath = await getIngressServices()
+    const ingressServices = ingressPath.body.spec.rules[0].http.paths.map(service => service.backend.service.name)
     console.log(ingressServices)
     let runningServices = await appsV1Api.listNamespacedDeployment('default')
     const runningServicesNames = runningServices.body.items.map(service => service.metadata.name)
-    for(const [index, value] of ingressServices.entries()){
-        if(runningServicesNames.find(name => name == value)){
+    for (const [index, value] of ingressServices.entries()) {
+        if (runningServicesNames.find(name => name == value)) {
             console.log("found service " + value)
+            console.log(index)
         } else {
             await patchIngressRemove(index)
         }
