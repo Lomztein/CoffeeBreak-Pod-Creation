@@ -65,9 +65,10 @@ td
     position:relative;
     font-size:xx-large;
     font-weight: bold;
-    border: 4px black;
-    border-style:groove;
+    border: none;
+    background-color: #4CAF50;
     text-align:center;
+    color: white;
 }
 
 #chatbox
@@ -79,39 +80,70 @@ td
     top:11%;
     left:11%;
     background-color: teal;
-    border: 4px black;
-    border-width:4px;
-    border-style: double;
+    border: none;
 }
 
 #chatarea
 {
-    border: 2px black;
-    border-style: groove;
+    border: none;
+    background-color: ;
     margin-left: 8px;
     padding-left:4px;
-    height:50vh;
+    height:800px;
     font-size: large;
+    color: white;
+}
+
+#inputarea 
+{
+    position:relative;
+    width:100%;
+    margin: 4px;
+    padding: 4px;
 }
 
 #messageinput
 {
-    width: 86%;
-    margin:4px;
     height:32px;
+    width: 90%;
+}
+
+#nickarea
+{
+    position:relative;
+    width:100%;
+    margin: 4px;
+    padding: 4px;
+}
+
+#nickheader
+{
+    width:10%;
+    font-size:larger;
+    text-align: left;
+    position:relative;
+    height:32px;
+    color:white;
+    font-weight: bold;
+    display:inline-block;
+}
+
+#nicknameinput
+{
+    position:relative;
+    height:32px;
+    width: 88.8%;
+    display:inline-block;
 }
 
 #sendmessage
 {
-    background-color:#4CAF50;
-    width: 11%;
     height:32px;
-    margin:4px;
-    position:relative;
-    font-size: x-large;
+    width: 8.5%;
+    background-color:#4CAF50;
     color: white;
-    font-weight: bold;
     border: none;
+    font-weight: bold;
 }
 
 #chatsubmit

@@ -3,12 +3,16 @@
         <title>Pod-based Chatroom LOL</title>
         <link rel="stylesheet" href="../css/stylesheet.css">
     </head>
-    <body>
+    <body onload="onLoad()">
         <div id="chatbox">
-            <h1 id="chatheader">This is a chatroom!</h1>
+            <h1 id="chatheader">THIS IS A CHATROOM :D</h1>
+            <div id="nickarea">
+                <h1 id="nickheader">NICKNAME: </h1>
+                <input id="nicknameinput" type="text">
+            </div>
             <div id="chatarea">
             </div>
-            <div>
+            <div id="inputarea">
                 <input id="messageinput" type="text">
                 <button id="sendmessage" onclick="sendMessage()">SEND</button>
             </div>
@@ -21,9 +25,19 @@
         var socket = io();
         var input = document.getElementById("messageinput");
         var messageArea = document.getElementById("chatarea");
+        var nickname = document.getElementById("nicknameinput");
 
         var messages = []
-        var maxMessages = 14;
+        var maxMessages = 22;
+
+        function onLoad ()
+        {
+            window.addEventListener("keydown", (event) => {
+                if (event.keyCode == 13) {
+                    sendMessage();
+                }
+            });
+        }
 
         socket.on("chatMessage", function(msg)
         {
@@ -39,7 +53,7 @@
         {
             if (input.value)
             {
-                socket.emit("chatMessage", input.value);
+                socket.emit("chatMessage", "<i>" + nickname.value + ": " + "</i>" + input.value);
                 input.value = '';
             }
         }

@@ -32,10 +32,10 @@ async function createServiceAndDeployment(username) {
                     containers: [
                         {
                             name: "usercontainer",
-                            image: "frederikbroth/kubertest:latest",
+                            image: "lomztein/socketio-chatroom:latest",
                             ports: [
                                 {
-                                    containerPort: 5000
+                                    containerPort: 3002
                                 }
                             ]
                         }
@@ -60,7 +60,7 @@ async function createServiceAndDeployment(username) {
             ports: [
                 {
                     port: 81,
-                    targetPort: 5000
+                    targetPort: 3002
                 }
             ],
             selector: {
