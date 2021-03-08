@@ -3,6 +3,16 @@ const app = express();
 const http = require('http').Server(app)
 const io = require('socket.io')(http);
 
+let url = undefined;
+
+app.use((req, res, next) => {
+    url = req.protocol + "://" + req.get('host') + req.originalUrl;
+    let test = req.get('host');
+    console.log(url);
+    console.log(test);
+    next()
+})
+
 app.use(express.static("public"))
 app.use(express.json())
 
@@ -20,11 +30,6 @@ io.on('connection', (socket) => {
     })
 })
 
-app.get("/", (req,res) => {
-    res.redirect("/chat")
-})
-
-app.use("/chat", (req, res) => {
+app.use("/", (req, res) => {
     res.sendFile(__dirname + "/public/html/chatroom.html")
 })
-
